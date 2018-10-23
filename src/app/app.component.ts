@@ -1,10 +1,21 @@
 import { Component } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+  <ul>
+    <li *ngFor="let item of items | async">
+      name: {{ item.name }} / age: {{ item.age }}
+    </li>
+  </ul>
+  `,
 })
 export class AppComponent {
-  title = 'angularfire2-sample';
+  items: Observable<any[]>;
+
+  constructor(db: AngularFirestore) {
+    this.items = db.collection('items').valueChanges();
+  }
 }
