@@ -1,8 +1,6 @@
-<!--The content below is only a placeholder and can be replaced.-->
+<!-- The content below is only a placeholder and can be replaced. -->
 <div style="text-align:center">
   <ul>
-    <li *ngFor="let item of items | async">
-      {{ item.name }}
-    </li>
+    <li *ngFor="let item of (items | async)">{{ item.name }}</li>
   </ul>
 </div>

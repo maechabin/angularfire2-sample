@@ -5,11 +5,11 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-root',
   template: `
-  <ul>
-    <li *ngFor="let item of items | async">
-      name: {{ item.name }} / age: {{ item.age }}
-    </li>
-  </ul>
+    <ul>
+      <li *ngFor="let item of (items | async)">
+        name: {{ item.name }} / age: {{ item.age }}
+      </li>
+    </ul>
   `,
 })
 export class AppComponent {
