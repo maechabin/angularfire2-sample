@@ -1,6 +1,21 @@
-<!-- The content below is only a placeholder and can be replaced. -->
-<div style="text-align:center">
-  <ul>
-    <li *ngFor="let item of (items | async)">{{ item.name }}</li>
-  </ul>
+<div>
+  name: <input type="text" [formControl]="name" /> age:
+  <input type="text" [formControl]="age" />
+  <button (click)="addItem()">Add</button>
+</div>
+<hr />
+<ul>
+  <li *ngFor="let item of (items | async)">
+    name: {{ item.name }} / age: {{ item.age }}
+    <button (click)="editItem(item)">Edit</button>
+    <button (click)="deleteItem(item)" [disabled]="isDisabledDelete">
+      Delete
+    </button>
+  </li>
+</ul>
+
+<div>
+  name: <input type="text" [formControl]="updatedName" /> age:
+  <input type="text" [formControl]="updatedAge" />
+  <button (click)="updateItem()" [disabled]="isDisabledEdit">Update</button>
 </div>
