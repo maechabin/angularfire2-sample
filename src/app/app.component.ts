@@ -18,37 +18,34 @@ interface Item {
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-  // items: Observable<any[]>;
+  /** コレクション */
   itemCollection: AngularFirestoreCollection<Item>;
+  /** ドキュメント */
   itemDoc: AngularFirestoreDocument<Item>;
+  /** コレクションのObservable */
   items: Observable<Item[]>;
-  item: Observable<Item>;
 
   name = new FormControl('');
   age = new FormControl('');
   updatedName = new FormControl('');
   updatedAge = new FormControl('');
   updatedId: string;
-
   isDisabledDelete = false;
   isDisabledEdit = true;
 
   constructor(private afs: AngularFirestore) {
     this.itemCollection = afs.collection<Item>('items');
-    this.itemDoc = afs.doc<Item>('name/mary');
   }
 
   ngOnInit(): void {
+    /** Read: アイテムを取得 */
     this.items = this.itemCollection.valueChanges();
-    this.item = this.itemDoc.valueChanges();
     this.items.subscribe(a => {
-      console.log(a);
-    });
-    this.item.subscribe(a => {
       console.log(a);
     });
   }
 
+  /** Create: アイテムを追加 */
   addItem(): void {
     const id = this.afs.createId();
     const item: Item = {
@@ -69,6 +66,7 @@ export class AppComponent implements OnInit {
     this.isDisabledEdit = false;
   }
 
+  /** Update: アイテムを更新 */
   updateItem(): void {
     const item = {
       id: this.updatedId,
@@ -83,6 +81,7 @@ export class AppComponent implements OnInit {
     this.isDisabledEdit = true;
   }
 
+  /** アイテムを削除 */
   deleteItem(item: Item): void {
     this.itemCollection.doc(item.id).delete();
   }
