@@ -3,10 +3,11 @@ import { FormControl } from '@angular/forms';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
-  AngularFirestoreDocument,
+  DocumentChangeAction,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
+/** 扱うデータの型 */
 interface Item {
   id: string;
   name: string;
@@ -19,33 +20,48 @@ interface Item {
 })
 export class AppComponent implements OnInit {
   /** コレクション */
-  itemCollection: AngularFirestoreCollection<Item>;
-  /** ドキュメント */
-  itemDoc: AngularFirestoreDocument<Item>;
+  private itemsCollection: AngularFirestoreCollection<Item>;
   /** コレクションのObservable */
   items: Observable<Item[]>;
+  /** コレクションsnapshotのObservable */
+  tiemsSnapshot: Observable<DocumentChangeAction<Item>[]>;
 
+  /** フォームコントロール（追加用） */
   name = new FormControl('');
   age = new FormControl('');
+
+  /** フォームコントロール（更新用） */
   updatedName = new FormControl('');
   updatedAge = new FormControl('');
+
+  /** 更新するドキュメントID */
   updatedId: string;
+
+  /** ボタンがdisableかどうか */
   isDisabledDelete = false;
   isDisabledEdit = true;
 
+  /** AngularFirestoreをDI */
   constructor(private afs: AngularFirestore) {
-    this.itemCollection = afs.collection<Item>('items');
+    /** itemsコレクションを取得してitemsCollectionに代入 */
+    this.itemsCollection = afs.collection<Item>('items');
   }
 
   ngOnInit(): void {
-    /** Read: アイテムを取得 */
-    this.items = this.itemCollection.valueChanges();
+    /** Read: データを参照（ストリームに変換） */
+    this.items = this.itemsCollection.valueChanges();
+    this.tiemsSnapshot = this.itemsCollection.snapshotChanges();
+
+    /** サブスクライブ */
     this.items.subscribe(a => {
+      console.log(a);
+    });
+    this.tiemsSnapshot.subscribe(a => {
       console.log(a);
     });
   }
 
-  /** Create: アイテムを追加 */
+  /** Create: データを追加 */
   addItem(): void {
     const id = this.afs.createId();
     const item: Item = {
@@ -53,11 +69,12 @@ export class AppComponent implements OnInit {
       name: this.name.value,
       age: this.age.value,
     };
-    this.itemCollection.doc(id).set(item);
+    this.itemsCollection.doc(id).set(item);
     this.name.setValue('');
     this.age.setValue('');
   }
 
+  /** 編集用のフォームにデータを表示 */
   editItem(item: Item): void {
     this.updatedName.setValue(item.name);
     this.updatedAge.setValue(item.age);
@@ -66,14 +83,14 @@ export class AppComponent implements OnInit {
     this.isDisabledEdit = false;
   }
 
-  /** Update: アイテムを更新 */
+  /** Update: データを更新 */
   updateItem(): void {
     const item = {
       id: this.updatedId,
       name: this.updatedName.value,
       age: this.updatedAge.value,
     };
-    this.itemCollection.doc(this.updatedId).update(item);
+    this.itemsCollection.doc(this.updatedId).update(item);
     this.updatedName.setValue('');
     this.updatedAge.setValue('');
     this.updatedId = null;
@@ -81,8 +98,8 @@ export class AppComponent implements OnInit {
     this.isDisabledEdit = true;
   }
 
-  /** アイテムを削除 */
+  /** データを削除 */
   deleteItem(item: Item): void {
-    this.itemCollection.doc(item.id).delete();
+    this.itemsCollection.doc(item.id).delete();
   }
 }
