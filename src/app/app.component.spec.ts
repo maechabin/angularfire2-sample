@@ -14,8 +14,8 @@ import { AppComponent } from './app.component';
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let component: AppComponent;
-  let afs: AngularFirestore;
 
+  /** The stub of AngureFirestore */
   const AngularFirestoreStub = {
     createId: () => 'createId',
     collection: (name: string) => ({
@@ -42,7 +42,6 @@ describe('AppComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
-    afs = TestBed.get(AngularFirestore);
   });
 
   it('should create the app', () => {
